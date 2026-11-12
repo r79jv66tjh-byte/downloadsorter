@@ -1,0 +1,5 @@
+{
+  "name": "DownloadSorter",
+  "entry": "DownloadSorter.pyw",
+  "pyinstaller": []
+}
