@@ -1,0 +1,103 @@
+{
+  "name": "DownloadSorter",
+  "description": "Scannt den Downloads-Ordner, ordnet Dateien Kategorien zu (Installer, Archive, Dokumente, Bilder, Videos, Musik, Torrents, Code, Sonstiges), findet Duplikate und Aufräum-Kandidaten, zeigt die Download-Herkunft und sortiert Dateien in Unterordner – mit Vorschau (--dry-run) und Rückgängig. Löscht nie etwas.",
+  "category": "Aufräumen & Ordnung",
+  "commands": [
+    {
+      "name": "scan",
+      "description": "Übersicht eines Ordners: Anzahl, Größe und Alter pro Kategorie, Altersverteilung, Zahl der Duplikate und Aufräum-Vorschläge. Guter Einstieg.",
+      "run": ["python", "cli.py", "scan", "--json"],
+      "args": [
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Zu scannender Ordner (Standard: Downloads des Nutzers)"},
+        {"name": "recursive", "flag": "--recursive", "type": "boolean", "required": false, "description": "Unterordner einbeziehen"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "files",
+      "description": "Listet Dateien mit Kategorie, erkanntem Typ, Größe, Alter und Herkunfts-Domain, filterbar nach Kategorie oder Namensteil.",
+      "run": ["python", "cli.py", "files", "--json"],
+      "args": [
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Ordner (Standard: Downloads)"},
+        {"name": "category", "flag": "--category", "type": "string", "required": false, "description": "Nur diese Kategorie: Installer, Archive, Dokumente, Bilder, Videos, Musik, Torrents, Code oder Sonstiges"},
+        {"name": "name", "flag": "--name", "type": "string", "required": false, "description": "Nur Dateien, deren Name diesen Text enthält"},
+        {"name": "sort", "flag": "--sort", "type": "string", "required": false, "description": "Reihenfolge: size (größte zuerst, Standard), age (älteste zuerst), newest oder name"},
+        {"name": "limit", "flag": "--limit", "type": "integer", "required": false, "description": "Höchstens so viele Dateien zurückgeben (Standard 100)"},
+        {"name": "recursive", "flag": "--recursive", "type": "boolean", "required": false, "description": "Unterordner einbeziehen"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "suggestions",
+      "description": "Aufräum-Vorschläge mit Begründung: alte Installer, abgebrochene Downloads (.crdownload/.part/.tmp), schon entpackte Archive, Duplikate. Nur Anzeige.",
+      "run": ["python", "cli.py", "suggestions", "--json"],
+      "args": [
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Ordner (Standard: Downloads)"},
+        {"name": "installer_age", "flag": "--installer-age", "type": "integer", "required": false, "description": "Installer gelten ab so vielen Tagen als alt (Standard aus Einstellungen, meist 30)"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "duplicates",
+      "description": "Inhaltlich identische Dateien (SHA-256) in Gruppen; die älteste Kopie ist jeweils als 'keep' markiert, dazu der verschwendete Platz.",
+      "run": ["python", "cli.py", "duplicates", "--json"],
+      "args": [
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Ordner (Standard: Downloads)"},
+        {"name": "recursive", "flag": "--recursive", "type": "boolean", "required": false, "description": "Unterordner einbeziehen"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "origin",
+      "description": "Woher eine Datei stammt: Download-URL (HostUrl), verweisende Seite (ReferrerUrl) und Sicherheitszone, sofern Windows sie gespeichert hat; dazu Typ und Kategorie.",
+      "run": ["python", "cli.py", "origin", "--json"],
+      "args": [
+        {"name": "file", "flag": "--file", "type": "string", "required": true, "description": "Dateiname im Ordner oder absoluter Pfad"},
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Ordner, in dem der Dateiname gesucht wird (Standard: Downloads)"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "history",
+      "description": "Protokoll der letzten Verschiebungen mit ID, Zeit, verschobenen Dateien und ob sie rückgängig gemacht werden können. Liefert die ID für 'undo'.",
+      "run": ["python", "cli.py", "history", "--json"],
+      "args": [
+        {"name": "limit", "flag": "--limit", "type": "integer", "required": false, "description": "Anzahl der neuesten Einträge (Standard 20)"}
+      ],
+      "readonly": true
+    },
+    {
+      "name": "rules",
+      "description": "Zeigt die eigenen Sortierregeln, die Zielordner je Kategorie und den Zustand der Automatik (Hintergrundmodus, Autostart).",
+      "run": ["python", "cli.py", "rules", "--json"],
+      "args": [],
+      "readonly": true
+    },
+    {
+      "name": "sort",
+      "description": "Verschiebt Dateien in Kategorie-Unterordner, nach den eigenen Regeln oder in ein Ziel. Muss eingegrenzt werden (category, file, name oder all). Erst mit dry_run die Vorschau zeigen. Überschreibt nie; Ergebnis enthält undo_id.",
+      "run": ["python", "cli.py", "sort", "--json"],
+      "args": [
+        {"name": "folder", "flag": "--folder", "type": "string", "required": false, "description": "Ordner (Standard: Downloads)"},
+        {"name": "category", "flag": "--category", "type": "string", "required": false, "description": "Nur Dateien dieser Kategorie einsortieren"},
+        {"name": "file", "flag": "--file", "type": "string", "required": false, "description": "Nur diese eine Datei (Name im Ordner oder absoluter Pfad)"},
+        {"name": "name", "flag": "--name", "type": "string", "required": false, "description": "Nur Dateien, deren Name diesen Text enthält"},
+        {"name": "all", "flag": "--all", "type": "boolean", "required": false, "description": "Ausdrücklich alle Dateien des Ordners einsortieren"},
+        {"name": "mode", "flag": "--mode", "type": "string", "required": false, "description": "category (Standard: Unterordner je Kategorie) oder rules (nur Dateien, zu denen eine eigene Regel passt)"},
+        {"name": "target", "flag": "--target", "type": "string", "required": false, "description": "Festes Ziel statt Kategorie: Unterordner-Name oder absoluter Pfad"},
+        {"name": "dry_run", "flag": "--dry-run", "type": "boolean", "required": false, "description": "Nur Vorschau zeigen, nichts verschieben"}
+      ],
+      "readonly": false
+    },
+    {
+      "name": "undo",
+      "description": "Macht eine Verschiebung rückgängig (Standard: die neueste noch offene). Überschreibt nie Dateien am Ursprungsort. Mit dry_run nur Vorschau.",
+      "run": ["python", "cli.py", "undo", "--json"],
+      "args": [
+        {"name": "id", "flag": "--id", "type": "string", "required": false, "description": "ID aus 'history' oder 'sort' (undo_id); leer = neueste offene Verschiebung"},
+        {"name": "dry_run", "flag": "--dry-run", "type": "boolean", "required": false, "description": "Nur Vorschau zeigen, nichts zurückverschieben"}
+      ],
+      "readonly": false
+    }
+  ]
+}
