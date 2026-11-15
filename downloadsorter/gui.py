@@ -910,9 +910,7 @@ def main(argv=None):
         W.run_headless()
         return
     if os.name == "nt":
-        try:
-            import ctypes
-            ctypes.windll.shcore.SetProcessDpiAwareness(1)
-        except Exception:
-            pass
+        import ctypes
+        # Gibt es ab Windows 8.1; Fehlschlag kommt als Rückgabewert, die Oberfläche ist dann nur unscharf.
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
     App(argv[0] if argv else None).mainloop()
