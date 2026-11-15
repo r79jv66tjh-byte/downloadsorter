@@ -53,7 +53,6 @@ class Suggestion:
     title: str         # Gruppenüberschrift
     reason: str        # Begründung für genau diese Datei
     file: FileInfo
-    group: int = 0     # bei Duplikaten: Gruppen-Nr.
 
 
 @dataclass
@@ -284,11 +283,11 @@ def _suggest(files, folders, duplicates, installer_age_days) -> list[Suggestion]
                 where = "daneben" if target == os.path.dirname(f.path) else f"in „{os.path.basename(target)}“"
                 out.append(Suggestion("extracted", "Archive, die schon entpackt sind",
                                       f"Inhalt liegt bereits {where}", f))
-    for i, grp in enumerate(duplicates, 1):
+    for grp in duplicates:
         keep = grp[0]
         for f in grp[1:]:
             out.append(Suggestion("duplicate", "Duplikate (älteste Kopie bleibt)",
-                                  f"identisch mit „{keep.name}“", f, group=i))
+                                  f"identisch mit „{keep.name}“", f))
     return out
 
 

@@ -13,7 +13,6 @@ MUSIC = "Musik"
 TORRENT = "Torrents"
 CODE = "Code"
 OTHER = "Sonstiges"
-INCOMPLETE = "Unvollständig"  # abgebrochene Downloads; wird intern als Unterkategorie von Sonstiges geführt
 
 CATEGORIES = [INSTALLER, ARCHIVE, DOCUMENT, IMAGE, VIDEO, MUSIC, TORRENT, CODE, OTHER]
 
@@ -46,10 +45,6 @@ _OLE_FAMILY = {"msi", "doc", "xls", "ppt", "msg", "msu", "one"}
 def extension(name: str) -> str:
     ext = os.path.splitext(name)[1]
     return ext[1:].lower() if ext else ""
-
-
-def category_from_extension(name: str) -> str | None:
-    return EXT_TO_CATEGORY.get(extension(name))
 
 
 def _zip_kind(path: str) -> str:
