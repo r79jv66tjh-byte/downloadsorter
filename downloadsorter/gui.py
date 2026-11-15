@@ -910,9 +910,7 @@ def main(argv=None):
         W.run_headless()
         return
     if os.name == "nt":
-        try:
-            import ctypes
-            ctypes.windll.shcore.SetProcessDpiAwareness(1)
-        except Exception:
-            pass
+        import ctypes
+        # Available since Windows 8.1; failure is a return code, and the UI is then merely blurry.
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
     App(argv[0] if argv else None).mainloop()

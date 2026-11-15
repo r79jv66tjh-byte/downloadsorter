@@ -75,21 +75,17 @@ class ScanResult:
 def default_downloads() -> str:
     """Ermittelt den echten Downloads-Ordner (auch wenn er verschoben wurde)."""
     if os.name == "nt":
-        try:
-            import ctypes
-            from ctypes import wintypes
-            import uuid
+        import ctypes
+        import uuid
 
-            guid = uuid.UUID("{374DE290-123F-4565-9164-39C4925E467B}")
-            buf = ctypes.c_wchar_p()
-            gid = (ctypes.c_byte * 16).from_buffer_copy(guid.bytes_le)
-            if ctypes.windll.shell32.SHGetKnownFolderPath(gid, 0, None, ctypes.byref(buf)) == 0:
-                p = buf.value
-                ctypes.windll.ole32.CoTaskMemFree(buf)
-                if p and os.path.isdir(p):
-                    return p
-        except Exception:
-            pass
+        guid = uuid.UUID("{374DE290-123F-4565-9164-39C4925E467B}")
+        buf = ctypes.c_wchar_p()
+        gid = (ctypes.c_byte * 16).from_buffer_copy(guid.bytes_le)
+        if ctypes.windll.shell32.SHGetKnownFolderPath(gid, 0, None, ctypes.byref(buf)) == 0:
+            p = buf.value
+            ctypes.windll.ole32.CoTaskMemFree(buf)
+            if p and os.path.isdir(p):
+                return p
     return os.path.join(os.path.expanduser("~"), "Downloads")
 
 
