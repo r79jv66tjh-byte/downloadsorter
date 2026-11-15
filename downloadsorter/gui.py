@@ -911,6 +911,6 @@ def main(argv=None):
         return
     if os.name == "nt":
         import ctypes
-        # Gibt es ab Windows 8.1; Fehlschlag kommt als Rückgabewert, die Oberfläche ist dann nur unscharf.
+        # Available since Windows 8.1; failure is a return code, and the UI is then merely blurry.
         ctypes.windll.shcore.SetProcessDpiAwareness(1)
     App(argv[0] if argv else None).mainloop()
